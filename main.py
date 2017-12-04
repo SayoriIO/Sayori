@@ -39,6 +39,8 @@ FONTS = {
     'y3': ImageFont.truetype('./fonts/y3.ttf', 18) # Yuri (Obsessed)
 }
 
+FONTS['y'] = FONTS['y1'] # Alias for Yuri (Normal)
+
 BACKGROUNDS = {
     'y2': Image.open('./backgrounds/poem_y1.jpg'),
     'y3': Image.open('./backgrounds/poem_y2.jpg')
@@ -83,17 +85,19 @@ async def handle_request(req):
         return web.Response(status=400, text='{"error": "Missing required field: `poem`.", "code": 1}', content_type='application/json')
 
     if type(body['poem']) is not str:
-        return web.Response(status=400, text='{"error": "Field `poem` is not a string.", "code": 2}', content_type='application/json')
+        return web.Response(status=400, text='{"error": "Field `poem` is not a string.", "code": 2}',
+                            content_type='application/json')
 
     if not body['poem']:
         return web.Response(status=400, text='{"error": "Field `poem` is empty.", "code": 3}', content_type='application/json')
 
+    if 'font' in body and body['font'] not in FONTS:
+        return web.Response(status=400,
+                            text='{{"error": "Unsupported font. Supported fonts are: \\"{}\\"", "code": 4}}'.format('\\", \\"'.join(FONTS.keys())),
+                            content_type='application/json')
+
     poem = body['poem'].replace('\r', '').replace('\n', '\u2426')
-
     _font = body.get('font', DEFAULT_FONT)
-
-    if _font not in FONTS:
-        _font = DEFAULT_FONT
 
     bg = BACKGROUNDS.get(_font, DEFAULT_BG).copy()
     font = FONTS[_font]
@@ -106,8 +110,7 @@ async def handle_request(req):
 
     if height > bg.height:
         bg = bg.resize((bg.width, height), Image.BICUBIC)
-
-    draw = ImageDraw.Draw(bg)
+        draw = ImageDraw.Draw(bg)
 
     draw.text((PADDING , PADDING), poem, '#000000', font)
     bg.save(b, 'png')

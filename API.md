@@ -5,7 +5,7 @@
 
 ### **Parameters**
  - `poem` (string) (required) - Text to generate an image for.
- - `font` (string) (optional) - Font to use for the poem. Will also pick a corresponding background at times. If the font is unsupported, it will fallback to a default font.
+ - `font` (string) (optional) - Font to use for the poem. Will also pick a corresponding background at times. Unsupported fonts will cause an error.
 
 Parameters can either be sent as a query string (`?poem=foobar`), or as a JSON body, with the latter taking precedence.
 
