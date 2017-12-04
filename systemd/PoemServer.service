@@ -1,0 +1,25 @@
+[Unit]
+
+Description = Poem Service for Monika
+
+[Service]
+
+# what binaries to exec. absolute paths only
+# default /usr/bin/python36 main.py
+
+ExecStart=/usr/bin/python36 main.py
+
+# Working directory for the service. This is 
+# where would the service would cwd in.
+# default /home/user/Sayori
+
+WorkingDirectory=/home/user/Sayori
+
+# What to exec when errored out
+# default sleep 3000
+
+ExecStop= /bin/sleep 3000
+
+[Install]
+
+WantedBy=multi-user.target
