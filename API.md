@@ -41,7 +41,7 @@ The field `poem` is not a string.
 The field `poem` is empty.
 
 ##### **Code 4**
-The value of the field `font` is an unsupported font. Check [here](#supported-fonts)
+The value of the field `font` is an unsupported font. Check [here](#supported-fonts) for supported fonts.
 
 #### **Content-Type: image/png**
 The image was successfully generated, and is provided as the response's body.
