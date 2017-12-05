@@ -39,8 +39,6 @@ FONTS = {
     'y3': ImageFont.truetype('./fonts/y3.ttf', 18) # Yuri (Obsessed)
 }
 
-FONTS['y'] = FONTS['y1'] # Alias for Yuri (Normal)
-
 BACKGROUNDS = {
     'y2': Image.open('./backgrounds/poem_y1.jpg'),
     'y3': Image.open('./backgrounds/poem_y2.jpg')
