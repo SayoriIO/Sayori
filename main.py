@@ -58,9 +58,19 @@ def break_text(text, font, max_width):
     # the string is appended to a list, and the string is set to the word plus a space, otherwise the word is just added
     # to the temporary string with a space.
     for word in word_list:
-        if font.getsize(tmp + word)[0] > max_width:
+        if font.getsize(tmp + word)[0] > max_width and font.getsize(word)[0] <= max_width:
             wrapped.append(tmp.strip())
             tmp = word + ' '
+        elif font.getsize(word)[0] > max_width:
+            # Handle stupidly long words.
+            for char in word:
+                if font.getsize(tmp + char)[0] > max_width:
+                    wrapped.append(tmp.strip())
+                    tmp = char
+                else:
+                    tmp += char
+
+            tmp += ' '
         else:
             tmp += word + ' '
 
