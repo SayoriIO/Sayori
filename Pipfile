@@ -4,6 +4,7 @@ verify_ssl = true
 
 [packages]
 pillow = "*"
+aiohttp = "*"
 
 [requires]
 python_version = "3.6"⏎
