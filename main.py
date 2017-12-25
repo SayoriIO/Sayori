@@ -56,19 +56,20 @@ def break_text(text, font, max_width):
         # Just pick an arbitrary number as the maximum character number
         clip = int(max_width / 5)
 
+        # create empty list to populate
         ret = []
 
         # loop through each line
         for t in text:
-            temp = [t]
-            w, h = font.getsize(t)
+            temp = [t] # set default output (no further lines split)
+            w, h = font.getsize(t) # get width of current line (height is discarded)
             # iterate through smaller and smaller character limits until all text fits
             while w > max_width:
                 clip -= 1
-                temp = textwrap.wrap(t, width=clip)
-                w = max(font.getsize(m)[0] for m in temp)
+                temp = textwrap.wrap(t, width=clip) # wrap text with set character limit
+                w = max(font.getsize(m)[0] for m in temp) # get width of longest line
 
-            ret += [temp]
+            ret += [temp] # add output to returning variable
         
         return "\n".join(ret)
 
