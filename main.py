@@ -49,36 +49,28 @@ BACKGROUNDS = {
 LOOP = asyncio.get_event_loop()
 EXECUTOR = ThreadPoolExecutor(max_workers=20)
 
+# copied/stolen and adapted from code in Kitchen Sink
 def break_text(text, font, max_width):
-    word_list = text.split(' ')
-    tmp = ''
-    wrapped = []
+        # Split all text by newlines to begin with
+        text = text.split("\n")
+        # Just pick an arbitrary number as the maximum character number
+        clip = int(max_width / 5)
 
-    # Iterates through all the words, and if the width of a tempory variable and the word is larger than the max width,
-    # the string is appended to a list, and the string is set to the word plus a space, otherwise the word is just added
-    # to the temporary string with a space.
-    for word in word_list:
-        if font.getsize(tmp + word)[0] > max_width and font.getsize(word)[0] <= max_width:
-            wrapped.append(tmp.strip())
-            tmp = word + ' '
-        elif font.getsize(word)[0] > max_width:
-            # Handle stupidly long words.
-            for char in word:
-                if font.getsize(tmp + char)[0] > max_width:
-                    wrapped.append(tmp.strip())
-                    tmp = char
-                else:
-                    tmp += char
+        ret = []
 
-            tmp += ' '
-        else:
-            tmp += word + ' '
+        # loop through each line
+        for t in text:
+            temp = [t]
+            w, h = font.getsize(t)
+            # iterate through smaller and smaller character limits until all text fits
+            while w > max_width:
+                clip -= 1
+                temp = textwrap.wrap(t, width=clip)
+                w = max(font.getsize(m)[0] for m in temp)
 
-    # Add remaining words
-    if tmp:
-        wrapped.append(tmp.strip())
-
-    return '\n'.join(wrapped)
+            ret += [temp]
+        
+        return "\n".join(ret)
 
 def gen_img(poem, font, bg):
     draw = ImageDraw.Draw(bg)
