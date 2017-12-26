@@ -24,8 +24,6 @@ Requests can either be a GET or a POST, with the former being allowed to support
 Both methods of submitting data are supported with both methods, however most things that send a GET will only allow the query string method (as far as I am aware).
 """
 
-WIDTH = 720
-HEIGHT = 500
 PADDING = 100 # px
 DEFAULT_FONT = 'm1'
 DEFAULT_BG = Image.open('./backgrounds/poem.jpg')
@@ -46,39 +44,32 @@ BACKGROUNDS = {
     'y3': Image.open('./backgrounds/poem_y2.jpg')
 }
 
-LOOP = asyncio.get_event_loop()
-EXECUTOR = ThreadPoolExecutor(max_workers=20)
+loop = asyncio.get_event_loop()
+executor = ThreadPoolExecutor(max_workers=20)
 
+# copied/stolen and adapted from code in Kitchen Sink
 def break_text(text, font, max_width):
-    word_list = text.split(' ')
-    tmp = ''
-    wrapped = []
+        # Split all text by newlines to begin with
+        text = text.split("\n")
+        # Just pick an arbitrary number as the maximum character number
+        clip = int(max_width / 5)
 
-    # Iterates through all the words, and if the width of a tempory variable and the word is larger than the max width,
-    # the string is appended to a list, and the string is set to the word plus a space, otherwise the word is just added
-    # to the temporary string with a space.
-    for word in word_list:
-        if font.getsize(tmp + word)[0] > max_width and font.getsize(word)[0] <= max_width:
-            wrapped.append(tmp.strip())
-            tmp = word + ' '
-        elif font.getsize(word)[0] > max_width:
-            # Handle stupidly long words.
-            for char in word:
-                if font.getsize(tmp + char)[0] > max_width:
-                    wrapped.append(tmp.strip())
-                    tmp = char
-                else:
-                    tmp += char
+        # create empty list to populate
+        ret = []
 
-            tmp += ' '
-        else:
-            tmp += word + ' '
+        # loop through each line
+        for t in text:
+            temp = [t] # set default output (no further lines split)
+            w, h = font.getsize(t) # get width of current line (height is discarded)
+            # iterate through smaller and smaller character limits until all text fits
+            while w > max_width:
+                clip -= 1
+                temp = textwrap.wrap(t, width=clip) # wrap text with set character limit
+                w = max(font.getsize(m)[0] for m in temp) # get width of longest line
 
-    # Add remaining words
-    if tmp:
-        wrapped.append(tmp.strip())
-
-    return '\n'.join(wrapped)
+            ret += temp # add output to returning variable
+        
+        return "\n".join(ret)
 
 def gen_img(poem, font, bg):
     draw = ImageDraw.Draw(bg)
@@ -132,7 +123,7 @@ async def handle_request(req):
     bg = BACKGROUNDS.get(_font, DEFAULT_BG).copy()
     font = FONTS[_font]
 
-    res = await LOOP.run_in_executor(EXECUTOR, gen_img, poem, font, bg)
+    res = await loop.run_in_executor(executor, gen_img, poem, font, bg)
 
     return web.Response(body=res, content_type='image/png')
 
