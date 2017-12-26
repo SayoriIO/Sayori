@@ -24,8 +24,6 @@ Requests can either be a GET or a POST, with the former being allowed to support
 Both methods of submitting data are supported with both methods, however most things that send a GET will only allow the query string method (as far as I am aware).
 """
 
-WIDTH = 720
-HEIGHT = 500
 PADDING = 100 # px
 DEFAULT_FONT = 'm1'
 DEFAULT_BG = Image.open('./backgrounds/poem.jpg')
@@ -70,7 +68,7 @@ def break_text(text, font, max_width):
                 w = max(font.getsize(m)[0] for m in temp) # get width of longest line
 
             ret += [temp] # add output to returning variable
-        
+
         return "\n".join(ret)
 
 def gen_img(poem, font, bg):
