@@ -44,8 +44,8 @@ BACKGROUNDS = {
     'y3': Image.open('./backgrounds/poem_y2.jpg')
 }
 
-LOOP = asyncio.get_event_loop()
-EXECUTOR = ThreadPoolExecutor(max_workers=20)
+loop = asyncio.get_event_loop()
+executor = ThreadPoolExecutor(max_workers=20)
 
 # copied/stolen and adapted from code in Kitchen Sink
 def break_text(text, font, max_width):
@@ -123,7 +123,7 @@ async def handle_request(req):
     bg = BACKGROUNDS.get(_font, DEFAULT_BG).copy()
     font = FONTS[_font]
 
-    res = await LOOP.run_in_executor(EXECUTOR, gen_img, poem, font, bg)
+    res = await loop.run_in_executor(executor, gen_img, poem, font, bg)
 
     return web.Response(body=res, content_type='image/png')
 
