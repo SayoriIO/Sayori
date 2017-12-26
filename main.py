@@ -69,7 +69,7 @@ def break_text(text, font, max_width):
                 temp = textwrap.wrap(t, width=clip) # wrap text with set character limit
                 w = max(font.getsize(m)[0] for m in temp) # get width of longest line
 
-            ret += [temp] # add output to returning variable
+            ret += temp # add output to returning variable
         
         return "\n".join(ret)
 
