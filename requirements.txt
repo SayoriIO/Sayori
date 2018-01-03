@@ -1,3 +1,2 @@
-Sayori
 aiohttp>=2.3.7
 pillow>=4.3.0
