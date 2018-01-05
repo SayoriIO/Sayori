@@ -31,7 +31,7 @@ DEFAULT_BG = Image.open('./backgrounds/poem.jpg')
 # Cache the fonts and backgrounds.
 
 FONTS = {
-    'm1': ImageFont.truetype('./fonts/m1.ttf', 34), # Monika
+    'm1': ImageFont.truetype('./fonts/m1.TTF', 34), # Monika
     's1': ImageFont.truetype('./fonts/s1.ttf', 34), # Sayori
     'n1': ImageFont.truetype('./fonts/n1.ttf', 28), # Natsuki
     'y1': ImageFont.truetype('./fonts/y1.ttf', 32), # Yuri (Normal)
