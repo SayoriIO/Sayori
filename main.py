@@ -2,6 +2,7 @@
 DDLC-style poem generator written in Python, replacing the original Lua one by FiniteReality.
 Created by Ovyerus (https://github.com/Ovyerus) and licensed under the MIT License.
 """
+import os
 import json
 import textwrap
 import asyncio
