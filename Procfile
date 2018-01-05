@@ -1,1 +1,1 @@
-web:python main.py
+worker: /usr/bin/python ./main.py
