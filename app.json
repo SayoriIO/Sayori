@@ -1,0 +1,27 @@
+{
+  "name": "Sayori",
+  "description": "A Poem Service API For Monika",
+  "scripts": {
+  },
+  "env": {
+    "PAPERTRAIL_API_TOKEN": {
+      "required": true
+    }
+  },
+  "formation": {
+    "web": {
+      "quantity": 1
+    }
+  },
+  "addons": [
+    "papertrail"
+  ],
+  "buildpacks": [
+    {
+      "url": "https://github.com/MonikaDesu/Sayori-buildpack"
+    },
+    {
+      "url": "heroku/python"
+    }
+  ]
+}
