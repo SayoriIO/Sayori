@@ -151,4 +151,4 @@ app.router.add_post('/generate', handle_request)
 app.router.add_get('/generate', handle_request)
 
 print('Loading poem server')
-web.run_app(app, port=int(os.environ.get('PORT', 8080)))
+web.run_app(app, port=int(os.environ.get('PORT', 8192)))
