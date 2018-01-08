@@ -48,35 +48,52 @@ BACKGROUNDS = {
 loop = asyncio.get_event_loop()
 executor = ThreadPoolExecutor(max_workers=20)
 
-# copied/stolen and adapted from code in Kitchen Sink
 def break_text(text, font, max_width):
-        # Split all text by newlines to begin with
-        text = text.split("\n")
-        # Just pick an arbitrary number as the maximum character number
-        clip = int(max_width / 5)
+    word_list = text.split(' ')
+    tmp = ''
+    wrapped = []
 
-        # create empty list to populate
-        ret = []
+    # Iterates through all the words, and if the width of a tempory variable and the word is larger than the max width,
+    # the string is appended to a list, and the string is set to the word plus a space, otherwise the word is just added
+    # to the temporary string with a space.
+    for word in word_list:
+        if font.getsize(tmp + word)[0] > max_width and font.getsize(word)[0] <= max_width:
+            tmp2 = tmp.strip().split('\n')
 
-        # loop through each line
-        for t in text:
-            temp = [t] # set default output (no further lines split)
-            w, h = font.getsize(t) # get width of current line (height is discarded)
-            # iterate through smaller and smaller character limits until all text fits
-            while w > max_width:
-                clip -= 1
-                temp = textwrap.wrap(t, width=clip) # wrap text with set character limit
-                w = max(font.getsize(m)[0] for m in temp) # get width of longest line
+            wrapped.append(tmp2[0])
 
-            ret += temp # add output to returning variable
-        
-        return "\n".join(ret)
+            if tmp2[1:]:
+                for line in tmp2[1:-1]:
+                    wrapped.append(line)
+
+
+                tmp = tmp2[-1] + ' ' + word + ' '
+            else:
+                tmp = word + ' '
+        elif font.getsize(word)[0] > max_width:
+            # Handle stupidly long words.
+            for char in word:
+                if font.getsize(tmp + char)[0] > max_width:
+                    wrapped.append(tmp.strip())
+                    tmp = char
+                else:
+                    tmp += char
+
+            tmp += ' '
+        else:
+            tmp += word + ' '
+
+    # Add remaining words
+    if tmp:
+        wrapped.append(tmp.strip())
+
+    return '\n'.join(wrapped)
 
 def gen_img(poem, font, bg):
     draw = ImageDraw.Draw(bg)
 
     b = BytesIO()
-    poem = break_text(poem, font, bg.width - PADDING * 2).replace('\u2426', '\n\n')
+    poem = break_text(poem, font, bg.width - PADDING * 2)
     height = max(bg.height, draw.textsize(poem, font)[1] + PADDING * 2)
 
     if height > bg.height:
@@ -118,7 +135,7 @@ async def handle_request(req):
                             text='{{"error": "Unsupported font. Supported fonts are: \\"{}\\"", "code": 4}}'.format('\\", \\"'.join(FONTS.keys())),
                             content_type='application/json')
 
-    poem = body['poem'].replace('\r', '').replace('\n', '\u2426')
+    poem = body['poem'].replace('\r', '')
     _font = body.get('font', DEFAULT_FONT)
 
     bg = BACKGROUNDS.get(_font, DEFAULT_BG).copy()
