@@ -1,8 +1,8 @@
 # Sayori
 
 A HTTP-based poem generator for Monika.  
-At least Python 3.5 is required to run the server.  
-[Pillow](https://python-pillow.org/) is also required, and can be installed by running `pip3 install Pillow` (or equivalent thereof)
+At least Python 3.6 is required to run the server.  
+All dependencies are specified in `requirements.txt`.
 
 ## Setup
 
