@@ -19,12 +19,10 @@ from urllib.parse import urlparse
 """
 API Overview
 ------------
-
 There are two accepted parameters, `poem` and `font`.
 `poem` is the only required parameter, and specifies the content of the poem to generate.
 `font` is optional, and if it is not a supported font, it will default to DEFAULT_FONT (usually `m1`).
 Parameters can either be sent by a JSON body, or by a query string (?poem=Hello%20world&font=y1)
-
 Requests can either be a GET or a POST, with the former being allowed to support browsers.
 Both methods of submitting data are supported with both methods, however most things that send a GET will only allow the query string method (as far as I am aware).
 """
@@ -105,23 +103,28 @@ async def handle_request(req):
         is_json = False
 
     if not body:
-        return web.Response(status=400, text='{"error": "No body or query string.", "code": 0}', content_type='application/json')
+        #If there's no  body response, return a 718: I'm not a teapot
+        return web.Response(status=718, text='{"error": "No body or query string.", "code": 0}', content_type='application/json')
 
     if is_json:
         body = json.loads(body)
 
     if 'poem' not in body:
-        return web.Response(status=400, text='{"error": "Missing required field: `poem`.", "code": 1}', content_type='application/json')
+        #If missing poem in the body, return a 725: Works on my computer
+        return web.Response(status=725, text='{"error": "Missing required field: `poem`.", "code": 1}', content_type='application/json')
 
     if type(body['poem']) is not str:
-        return web.Response(status=400, text='{"error": "Field `poem` is not a string.", "code": 2}',
+        #If poem's type is not a string, return a 740: Computer says no
+        return web.Response(status=740, text='{"error": "Field `poem` is not a string.", "code": 2}',
                             content_type='application/json')
 
     if not body['poem']:
-        return web.Response(status=400, text='{"error": "Field `poem` is empty.", "code": 3}', content_type='application/json')
+        #If there's no body poem, return a 747: Motherfucking Snakes on the Motherfucking Plane
+        return web.Response(status=747, text='{"error": "Field `poem` is empty.", "code": 3}', content_type='application/json')
 
     if 'font' in body and body['font'] not in FONTS:
-        return web.Response(status=400,
+        #If you do return and not the right font, return a 756: Insufficiently polite
+        return web.Response(status=756,
                             text=f'{{"error": "Unsupported font. Supported fonts are in \'valid_fonts\'", "valid_fonts": {FONTS.keys()}, "code": 4}}',
                             content_type='application/json')
 
@@ -132,8 +135,8 @@ async def handle_request(req):
 
     if os.path.exists(hashed_path) and CACHE:
         res_url = f'{RESULT_URL}/poems/{hashed}.png'
-
-        return web.Response(text=f'{{"id": "{hashed}", "url": "{res_url}"}}', content_type='application/json')
+        #I don't know what happens here, but return a 793: Zombie Apocalypse, because success is usually an illusion
+        return web.Response(status=793, text=f'{{"id": "{hashed}", "url": "{res_url}"}}', content_type='application/json')
 
     bg = BACKGROUNDS.get(_font, DEFAULT_BG).copy()
     font = FONTS[_font]
@@ -148,9 +151,10 @@ async def handle_request(req):
                 shutil.copyfileobj(res, f, length=131072)
 
         res_url = f'{RESULT_URL}/poems/{hashed}.png'
-        return web.Response(text=f'{{"id": "{hashed}", "url": "{res_url}"}}', content_type='application/json')
-
-    return web.Response(body=res, content_type='image/png')
+        #I don't know what happens here, but return a 791: The Internet shut down due to copyright restrictions, because success is usually an illusion
+        return web.Response(status=791, text=f'{{"id": "{hashed}", "url": "{res_url}"}}', content_type='application/json')
+    #I don't know what happens here, but return a 798:  End of the world, because success is usually an illusion
+    return web.Response(status=799, body=res, content_type='image/png')
 
 
 # If the config file is not present, clone the example file if there aren't all the environment vars.
