@@ -26,3 +26,7 @@ If you can't be assed to download the game (if you haven't already) and extract 
 1. You can download and extract the two folders inside this zip archive https://owo.whats-th.is/d7c9fe.zip  
 2. If you can't even be assed to do that, you can run either of the `get-resources` scripts, depending on your system (`.bat` for Windows, `.sh` for Linux).
  - NOTE: The `.sh` script requires `unzip` to be installed on the system. This can be installed with the respective package manager of your distribution.
+
+And if you even can't be arsed to do anything, we made a Heroku button especially for deploying your own version of Sayori.
+
+[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy)

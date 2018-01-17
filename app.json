@@ -4,8 +4,6 @@
   "scripts": {
   },
   "env": {
-    "PAPERTRAIL_API_TOKEN": {
-      "required": true
     }
   },
   "formation": {
@@ -14,7 +12,8 @@
     }
   },
   "addons": [
-    "papertrail"
+    "papertrail",
+    "edge"
   ],
   "buildpacks": [
     {
