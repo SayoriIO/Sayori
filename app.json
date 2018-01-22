@@ -9,8 +9,7 @@
     }
   },
   "addons": [
-    "coralogix",
-    "edge"
+    "papertrail"
   ],
   "buildpacks": [
     {
