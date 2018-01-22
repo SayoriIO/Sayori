@@ -3,7 +3,6 @@
   "description": "A Poem Service API For Monika",
   "scripts": {
   },
-  },
   "formation": {
     "web": {
       "quantity": 1
