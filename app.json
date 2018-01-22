@@ -3,8 +3,6 @@
   "description": "A Poem Service API For Monika",
   "scripts": {
   },
-  "env": {
-    }
   },
   "formation": {
     "web": {
@@ -12,15 +10,15 @@
     }
   },
   "addons": [
-    "papertrail",
+    "coralogix",
     "edge"
   ],
   "buildpacks": [
     {
-      "url": "https://github.com/MonikaDesu/Sayori-buildpack.git"
-    },
-    {
       "url": "heroku/python"
+    }, 
+    {
+      "url": "https://github.com/MonikaDesu/Sayori-buildpack.git"
     }
   ]
 }
