@@ -155,38 +155,6 @@ async def handle_request(req):
 
     return web.Response(body=res, content_type='image/png')
 
-
-async def handle_beverage(req):
-    body = await req.text()
-    is_json = True
-
-    if not body:
-        body = req.query
-        is_json = False
-
-    if not body:
-        return web.Response(status=400, text='{"error": "No body or query string.", "code": 10}', content_type='application/json')
-
-    if is_json:
-        body = json.loads(body)
-
-    if 'beverage' not in body:
-        return web.Response(status=400, text='{"error": "Missing required field: `beverage`.", "code": 11}', content_type='application/json')
-
-    if type(body['beverage']) is not str:
-        return web.Response(status=400, text='{"error": "Field `beverage` is not a string.", "code": 12}',
-                            content_type='application/json')
-
-    if body['beverage'].lower() != 'tea':
-        return web.Response(status=418, text=f'{{"error": "Invalid beverage \'{body["beverage"]}\'. I am a teapot.", "code": 13}}')
-
-    beverage_type = body.get('extras', {}).get('type', 'black').lower()
-    has_milk = body.get('extras', {}).get('milk', False)
-
-    if beverage_type not in BEVERAGE_TYPES:
-        return web.Response(status=400, text=f'{{"error": "Unsupported beverage type subtype.", "valid_types": {}}}')
-
-
 # If the config file is not present, clone the example file if there aren't all the environment vars.
 if not os.path.exists('./config.yaml'):
     if all(x in os.environ for x in ('DEFAULT_FONT', 'DEFAULT_BG', 'PADDING', 'CDN', 'RESULT_URL', 'CACHE', 'PORT')):
@@ -251,8 +219,6 @@ if not os.path.exists('./poems'):
 
 app.router.add_post('/generate', handle_request)
 app.router.add_get('/generate', handle_request)
-app.router.add_get('/brew', handle_beverage)
-app.router.add_post('/brew', handle_beverage)
 app.router.add_static('/poems', './poems')
 
 print('Loading poem server')
