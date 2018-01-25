@@ -99,7 +99,7 @@ def gen_img(poem, font, bg):
 @web.middleware
 async def cors_middleware(req, handler):
     resp = await handler(req)
-    resp.headers['Access-Control-Allow-Headers'] = '*'
+    resp.headers['Access-Control-Allow-Origin'] = '*'
 
     return resp
 
