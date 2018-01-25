@@ -100,6 +100,8 @@ def gen_img(poem, font, bg):
 async def cors_middleware(req, handler):
     resp = await handler(req)
     resp.headers['Access-Control-Allow-Origin'] = '*'
+    resp.headers['Access-Control-Allow-Methods'] = 'GET, POST'
+    resp.headers['Access-Control-Allow-Headers'] = 'Content-Type'
 
     return resp
 
