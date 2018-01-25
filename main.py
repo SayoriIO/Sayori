@@ -96,6 +96,12 @@ def gen_img(poem, font, bg):
     return b
 
 
+@web.middleware
+async def cors_middleware(req, handler):
+    resp = await handler(req)
+    resp.headers['Access-Control-Allow-Headers'] = '*'
+
+
 async def handle_request(req):
     body = await req.text()
     is_json = True
@@ -105,25 +111,22 @@ async def handle_request(req):
         is_json = False
 
     if not body:
-        return web.Response(status=400, text='{"error": "No body or query string.", "code": 0}', content_type='application/json')
+        return web.Response(status=400, json={'error': 'No body or query string.', 'code': 0})
 
     if is_json:
         body = json.loads(body)
 
     if 'poem' not in body:
-        return web.Response(status=400, text='{"error": "Missing required field: `poem`.", "code": 1}', content_type='application/json')
+        return web.Response(status=400, json={'error': 'Missing required field: "poem".', 'code': 1})
 
     if type(body['poem']) is not str:
-        return web.Response(status=400, text='{"error": "Field `poem` is not a string.", "code": 2}',
-                            content_type='application/json')
+        return web.Response(status=400, json={'error': 'Field "poem" is not a string.', 'code': 2})
 
     if not body['poem']:
-        return web.Response(status=400, text='{"error": "Field `poem` is empty.", "code": 3}', content_type='application/json')
+        return web.Response(status=400, json={'error': 'Field "poem" is empty.', 'code': 3})
 
     if 'font' in body and body['font'] not in FONTS:
-        return web.Response(status=400,
-                            text=f'{{"error": "Unsupported font. Supported fonts are in \'valid_fonts\'", "valid_fonts": {FONTS.keys()}, "code": 4}}',
-                            content_type='application/json')
+        return web.Response(status=400, text={'error': 'Unsupported font.', 'valid_fonts': FONTS.keys(), 'code': 4})
 
     poem = body['poem'].replace('\r', '')
     _font = body.get('font', DEFAULT_FONT)
@@ -133,7 +136,7 @@ async def handle_request(req):
     if os.path.exists(hashed_path) and CACHE:
         res_url = f'{RESULT_URL}/poems/{hashed}.png'
 
-        return web.Response(text=f'{{"id": "{hashed}", "url": "{res_url}"}}', content_type='application/json')
+        return web.Response(json={'id': hashed, 'url': res_url})
 
     bg = BACKGROUNDS.get(_font, DEFAULT_BG).copy()
     font = FONTS[_font]
@@ -148,9 +151,40 @@ async def handle_request(req):
                 shutil.copyfileobj(res, f, length=131072)
 
         res_url = f'{RESULT_URL}/poems/{hashed}.png'
-        return web.Response(text=f'{{"id": "{hashed}", "url": "{res_url}"}}', content_type='application/json')
+        return web.Response(json={'id': hashed, 'url': res_url})
 
     return web.Response(body=res, content_type='image/png')
+
+
+async def handle_beverage(req):
+    body = await req.text()
+    is_json = True
+
+    if not body:
+        body = req.query
+        is_json = False
+
+    if not body:
+        return web.Response(status=400, text='{"error": "No body or query string.", "code": 10}', content_type='application/json')
+
+    if is_json:
+        body = json.loads(body)
+
+    if 'beverage' not in body:
+        return web.Response(status=400, text='{"error": "Missing required field: `beverage`.", "code": 11}', content_type='application/json')
+
+    if type(body['beverage']) is not str:
+        return web.Response(status=400, text='{"error": "Field `beverage` is not a string.", "code": 12}',
+                            content_type='application/json')
+
+    if body['beverage'].lower() != 'tea':
+        return web.Response(status=418, text=f'{{"error": "Invalid beverage \'{body["beverage"]}\'. I am a teapot.", "code": 13}}')
+
+    beverage_type = body.get('extras', {}).get('type', 'black').lower()
+    has_milk = body.get('extras', {}).get('milk', False)
+
+    if beverage_type not in BEVERAGE_TYPES:
+        return web.Response(status=400, text=f'{{"error": "Unsupported beverage type subtype.", "valid_types": {}}}')
 
 
 # If the config file is not present, clone the example file if there aren't all the environment vars.
@@ -206,6 +240,8 @@ BACKGROUNDS = {
     'y3': Image.open('./backgrounds/poem_y2.jpg')
 }
 
+BEVERAGE_TYPES = ('chai', 'oolong', 'green', 'herbal', 'black', 'yellow')
+
 loop = asyncio.get_event_loop()
 executor = ThreadPoolExecutor(max_workers=20)
 app = web.Application()
@@ -215,6 +251,8 @@ if not os.path.exists('./poems'):
 
 app.router.add_post('/generate', handle_request)
 app.router.add_get('/generate', handle_request)
+app.router.add_get('/brew', handle_beverage)
+app.router.add_post('/brew', handle_beverage)
 app.router.add_static('/poems', './poems')
 
 print('Loading poem server')
