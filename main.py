@@ -101,6 +101,8 @@ async def cors_middleware(req, handler):
     resp = await handler(req)
     resp.headers['Access-Control-Allow-Headers'] = '*'
 
+    return resp
+
 
 async def handle_request(req):
     body = await req.text()
@@ -111,22 +113,22 @@ async def handle_request(req):
         is_json = False
 
     if not body:
-        return web.Response(status=400, json={'error': 'No body or query string.', 'code': 0})
+        return web.json_response({'error': 'No body or query string.', 'code': 0}, status=400)
 
     if is_json:
         body = json.loads(body)
 
     if 'poem' not in body:
-        return web.Response(status=400, json={'error': 'Missing required field: "poem".', 'code': 1})
+        return web.json_response({'error': 'Missing required field: "poem".', 'code': 1}, status=400)
 
     if type(body['poem']) is not str:
-        return web.Response(status=400, json={'error': 'Field "poem" is not a string.', 'code': 2})
+        return web.json_response({'error': 'Field "poem" is not a string.', 'code': 2}, status=400)
 
     if not body['poem']:
-        return web.Response(status=400, json={'error': 'Field "poem" is empty.', 'code': 3})
+        return web.json_response({'error': 'Field "poem" is empty.', 'code': 3}, status=400)
 
     if 'font' in body and body['font'] not in FONTS:
-        return web.Response(status=400, text={'error': 'Unsupported font.', 'valid_fonts': FONTS.keys(), 'code': 4})
+        return web.json_response({'error': 'Unsupported font.', 'valid_fonts': FONTS.keys(), 'code': 4}, status=400)
 
     poem = body['poem'].replace('\r', '')
     _font = body.get('font', DEFAULT_FONT)
@@ -136,7 +138,7 @@ async def handle_request(req):
     if os.path.exists(hashed_path) and CACHE:
         res_url = f'{RESULT_URL}/poems/{hashed}.png'
 
-        return web.Response(json={'id': hashed, 'url': res_url})
+        return web.json_response({'id': hashed, 'url': res_url})
 
     bg = BACKGROUNDS.get(_font, DEFAULT_BG).copy()
     font = FONTS[_font]
@@ -151,9 +153,9 @@ async def handle_request(req):
                 shutil.copyfileobj(res, f, length=131072)
 
         res_url = f'{RESULT_URL}/poems/{hashed}.png'
-        return web.Response(json={'id': hashed, 'url': res_url})
+        return web.json_response(json={'id': hashed, 'url': res_url})
 
-    return web.Response(body=res, content_type='image/png')
+    return web.json_response(body=res, content_type='image/png')
 
 # If the config file is not present, clone the example file if there aren't all the environment vars.
 if not os.path.exists('./config.yaml'):
@@ -212,7 +214,7 @@ BEVERAGE_TYPES = ('chai', 'oolong', 'green', 'herbal', 'black', 'yellow')
 
 loop = asyncio.get_event_loop()
 executor = ThreadPoolExecutor(max_workers=20)
-app = web.Application()
+app = web.Application(middlewares=[cors_middleware])
 
 if not os.path.exists('./poems'):
     os.mkdir('./poems')
