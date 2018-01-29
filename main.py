@@ -100,10 +100,16 @@ def gen_img(poem, font, bg):
 async def cors_middleware(req, handler):
     resp = await handler(req)
     resp.headers['Access-Control-Allow-Origin'] = '*'
-    resp.headers['Access-Control-Allow-Methods'] = 'GET, POST'
+    resp.headers['Access-Control-Allow-Methods'] = 'GET, POST, OPTIONS'
     resp.headers['Access-Control-Allow-Headers'] = 'Content-Type'
 
     return resp
+
+
+# Just return a 200 to allow option requests to pass through.
+# The CORS middleware above sets the appropriate headers.
+async def handle_options(req):
+    return web.Response(status=200)
 
 
 async def handle_request(req):
@@ -155,7 +161,7 @@ async def handle_request(req):
                 shutil.copyfileobj(res, f, length=131072)
 
         res_url = f'{RESULT_URL}/poems/{hashed}.png'
-        return web.json_response(json={'id': hashed, 'url': res_url})
+        return web.json_response({'id': hashed, 'url': res_url})
 
     return web.json_response(body=res, content_type='image/png')
 
@@ -223,6 +229,7 @@ if not os.path.exists('./poems'):
 
 app.router.add_post('/generate', handle_request)
 app.router.add_get('/generate', handle_request)
+app.router.add_route('OPTIONS', '/generate', handle_options)
 app.router.add_static('/poems', './poems')
 
 print('Loading poem server')
