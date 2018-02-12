@@ -4,7 +4,6 @@ Created by Ovyerus (https://github.com/Ovyerus) and licensed under the MIT Licen
 """
 import os
 import json
-import textwrap
 import asyncio
 import yaml
 import shutil
@@ -16,18 +15,18 @@ from PIL import Image, ImageDraw, ImageFont
 from concurrent.futures import ThreadPoolExecutor
 from urllib.parse import urlparse
 
-"""
-API Overview
-------------
 
-There are two accepted parameters, `poem` and `font`.
-`poem` is the only required parameter, and specifies the content of the poem to generate.
-`font` is optional, and if it is not a supported font, it will default to DEFAULT_FONT (usually `m1`).
-Parameters can either be sent by a JSON body, or by a query string (?poem=Hello%20world&font=y1)
+# API Overview
+# ------------
 
-Requests can either be a GET or a POST, with the former being allowed to support browsers.
-Both methods of submitting data are supported with both methods, however most things that send a GET will only allow the query string method (as far as I am aware).
-"""
+# There are two accepted parameters, `poem` and `font`.
+# `poem` is the only required parameter, and specifies the content of the poem to generate.
+# `font` is optional, and if it is not a supported font, it will default to DEFAULT_FONT (usually `m1`).
+# Parameters can either be sent by a JSON body, or by a query string (?poem=Hello%20world&font=y1)
+
+# Requests can either be a GET or a POST, with the former being allowed to support browsers.
+# Both methods of submitting data are supported with both methods,
+# however most things that send a GET will only allow the query string method (as far as I am aware).
 
 
 def is_url(url):
@@ -45,7 +44,7 @@ def break_text(text, font, max_width):
     # to the temporary string with a space.
     for word in word_list:
         if font.getsize(tmp + word)[0] > max_width and font.getsize(word)[0] <= max_width:
-            tmp2 = tmp.strip().split('\n') # Splits the line along all newlines, in order to properly obey them.
+            tmp2 = tmp.strip().split('\n')  # Splits the line along all newlines, in order to properly obey them.
 
             wrapped.append(tmp2[0])
 
@@ -89,7 +88,7 @@ def gen_img(poem, font, bg):
         bg = bg.resize((bg.width, height), Image.BICUBIC)
         draw = ImageDraw.Draw(bg)
 
-    draw.text((PADDING , PADDING), poem, '#000000', font)
+    draw.text((PADDING, PADDING), poem, '#000000', font)
     bg.save(b, 'png')
     b.seek(0)
 
@@ -129,7 +128,7 @@ async def handle_request(req):
     if 'poem' not in body:
         return web.json_response({'error': 'Missing required field: "poem".', 'code': 1}, status=400)
 
-    if type(body['poem']) is not str:
+    if not isinstance(body['poem'], str):
         return web.json_response({'error': 'Field "poem" is not a string.', 'code': 2}, status=400)
 
     if not body['poem']:
@@ -188,14 +187,15 @@ if os.path.exists('./config.yaml'):
     with open('./config.yaml') as c:
         config = yaml.load(c)
 
-PADDING = config['padding'] # px
+PADDING = config['padding']  # px
 DEFAULT_FONT = config['default_font']
 DEFAULT_BG = Image.open('./backgrounds/' + config['default_bg'])
 
 CACHE = config['cache']
-RESULT_URL = config['result_url'] # If there is a CDN specified, this gets overwritten.
+RESULT_URL = config['result_url']  # If there is a CDN specified, this gets overwritten.
 
-# If the cdn option is a URL, set RESULT_URL to it, otherwise if there is an environment variable that exists with the value, set that instead.
+# If the cdn option is a URL, set RESULT_URL to it,
+# otherwise if there is an environment variable that exists with the value, set that instead.
 if is_url(config['cdn']):
     RESULT_URL = config['cdn']
     CACHE = True
@@ -205,12 +205,12 @@ elif os.environ.get(config['cdn']):
 
 # Cache the fonts and backgrounds.
 FONTS = {
-    'm1': ImageFont.truetype('./fonts/m1.TTF', 34), # Monika
-    's1': ImageFont.truetype('./fonts/s1.ttf', 34), # Sayori
-    'n1': ImageFont.truetype('./fonts/n1.ttf', 28), # Natsuki
-    'y1': ImageFont.truetype('./fonts/y1.ttf', 32), # Yuri (Normal)
-    'y2': ImageFont.truetype('./fonts/y2.ttf', 40), # Yuri (Fast)
-    'y3': ImageFont.truetype('./fonts/y3.ttf', 18) # Yuri (Obsessed)
+    'm1': ImageFont.truetype('./fonts/m1.TTF', 34),  # Monika
+    's1': ImageFont.truetype('./fonts/s1.ttf', 34),  # Sayori
+    'n1': ImageFont.truetype('./fonts/n1.ttf', 28),  # Natsuki
+    'y1': ImageFont.truetype('./fonts/y1.ttf', 32),  # Yuri (Normal)
+    'y2': ImageFont.truetype('./fonts/y2.ttf', 40),  # Yuri (Fast)
+    'y3': ImageFont.truetype('./fonts/y3.ttf', 18)  # Yuri (Obsessed)
 }
 
 BACKGROUNDS = {
