@@ -1,4 +1,4 @@
-# Sayori
+# Sayori [![Codacy Badge](https://api.codacy.com/project/badge/Grade/f56158aaed54480cbb64f7670e599843)](https://app.codacy.com/app/sr229/Sayori?utm_source=github.com&utm_medium=referral&utm_content=MonikaDesu/Sayori&utm_campaign=badger)
 
 A HTTP-based poem generator for Monika.  
 At least Python 3.6 is required to run the server.  
@@ -28,5 +28,6 @@ If you can't be assed to download the game (if you haven't already) and extract 
  - NOTE: The `.sh` script requires `unzip` to be installed on the system. This can be installed with the respective package manager of your distribution.
 
 And if you even can't be arsed to do anything, we made a Heroku button especially for deploying your own version of Sayori.
+
 
 [![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/MonikaDesu/Sayori)
