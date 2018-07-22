@@ -144,20 +144,14 @@ async def handle_request(req):
     hashed_path = f'./poems/{hashed}.png'
     
     # Save to redis
+  if CACHE == true:
     output = StringIO.StringIO()
     im = Image.open(f'./poems/{hashed}.png')
     im.save(output, format=im.format)
-    redis.set(f'poem:{hashed}', output.getvalue(), ex=604800)
+    redis.set(f'poem:{hashed}', output.getvalue(), ex=259200)
 
-    if os.path.exists(hashed_path) and redis.exists(f'poem:{hashed}') and CACHE:
+    if os.path.exists(hashed_path) and CACHE:
         res_url = f'{RESULT_URL}/poems/{hashed}.png'
-        with redis.get(f'poem:{hashed}') as data:
-          if os.path.exists(hashed_path):
-              print('ignoring secondary cache recovery.')
-          else:
-            open(hashed_path)
-            data.write(data)
-            data.close()
         return web.json_response({'id': hashed, 'url': res_url})
 
     bg = BACKGROUNDS.get(_font, DEFAULT_BG).copy()
@@ -166,12 +160,22 @@ async def handle_request(req):
     res = await loop.run_in_executor(executor, gen_img, poem, font, bg)
 
     if CACHE:
+        # let's check if this exists
+        # If not, we create it from Redis Cache
+        if redis.exists(f'poem:{hashed}'):
+           with redis.get(f'poem:{hashed}') as data:
+               if os.path.exists(hashed_path):
+                  print('ignoring secondary cache recovery.')
+                else:
+                  open(hashed_path)
+                  data.write(data)
+                  data.close()
         # The same image might've been generated in the mean time.
         # Check *just* in case.
         if not os.path.exists(hashed_path):
             with open(hashed_path, 'wb') as f:
                 shutil.copyfileobj(res, f, length=131072)
-
+        
         res_url = f'{RESULT_URL}/poems/{hashed}.png'
         return web.json_response({'id': hashed, 'url': res_url})
 
