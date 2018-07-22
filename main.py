@@ -10,7 +10,6 @@ import shutil
 import hashlib
 import pickle
 import redis
-import Image
 import StringIO
 
 from io import BytesIO
