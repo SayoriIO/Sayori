@@ -210,6 +210,7 @@ DEFAULT_FONT = config['default_font']
 DEFAULT_BG = Image.open('./backgrounds/' + config['default_bg'])
 
 CACHE = config['cache']
+redis = redis.StrictRedis(host=config['redis_host'])
 RESULT_URL = config['result_url']  # If there is a CDN specified, this gets overwritten.
 
 # If the cdn option is a URL, set RESULT_URL to it,
@@ -243,7 +244,6 @@ BEVERAGE_TYPES = ('chai', 'oolong', 'green', 'herbal', 'black', 'yellow')
 loop = asyncio.get_event_loop()
 executor = ThreadPoolExecutor(max_workers=20)
 app = web.Application(middlewares=[cors_middleware])
-redis = redis.StrictRedis(host=config['redis_host'])
 
 
 if not os.path.exists('./poems'):
