@@ -17,8 +17,6 @@ from PIL import Image, ImageDraw, ImageFont
 from concurrent.futures import ThreadPoolExecutor
 from urllib.parse import urlparse
 
-redis = redis.StrictRedis(host=config[redis_host])
-
 # API Overview
 # ------------
 
@@ -241,6 +239,8 @@ BEVERAGE_TYPES = ('chai', 'oolong', 'green', 'herbal', 'black', 'yellow')
 loop = asyncio.get_event_loop()
 executor = ThreadPoolExecutor(max_workers=20)
 app = web.Application(middlewares=[cors_middleware])
+redis = redis.StrictRedis(host=config[redis_host])
+
 
 if not os.path.exists('./poems'):
     os.mkdir('./poems')
