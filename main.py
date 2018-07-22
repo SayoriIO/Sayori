@@ -210,7 +210,7 @@ DEFAULT_FONT = config['default_font']
 DEFAULT_BG = Image.open('./backgrounds/' + config['default_bg'])
 
 CACHE = config['cache']
-redis = redis.StrictRedis(host=config['redis_host'])
+redis = redis.StrictRedis(host=config['redis_host'] or os.environ['REDIS_URL'])
 RESULT_URL = config['result_url']  # If there is a CDN specified, this gets overwritten.
 
 # If the cdn option is a URL, set RESULT_URL to it,
