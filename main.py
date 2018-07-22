@@ -1,6 +1,6 @@
 """
 DDLC-style poem generator written in Python, replacing the original Lua one by FiniteReality.
-Created by Ovyerus (https://github.com/Ovyerus) and Capuccino (https://github.com/sr229) and licensed under the MIT License.
+Created by Ovyerus (https://github.com/Ovyerus) and licensed under the MIT License.
 """
 import os
 import json
@@ -9,10 +9,6 @@ import asyncio
 import yaml
 import shutil
 import hashlib
-import pickle
-import redis
-import Image
-import StringIO
 
 from io import BytesIO
 from aiohttp import web
@@ -146,21 +142,10 @@ async def handle_request(req):
     _font = body.get('font', DEFAULT_FONT)
     hashed = hashlib.md5((body['poem'] + _font).encode('utf8')).hexdigest()
     hashed_path = f'./poems/{hashed}.png'
-    
-    # Save to redis
-    output = StringIO.StringIO()
-    im = Image.open(f'./poems/{hashed}.png')
-    im.save(output, format=im.format)
 
-    redis = redis.StrictRedis(host=config[redisHost])
-    r.set(f'poem:{hashed}', output.getvalue(), ex=604800)
-
-    if os.path.exists(hashed_path) and redis.exists(f'poem:{hashed}') and CACHE:
+    if os.path.exists(hashed_path) and CACHE:
         res_url = f'{RESULT_URL}/poems/{hashed}.png'
-        with redis.get(f'poem:{hashed}') as data:
-            open(hashed_path)
-            data.write(data)
-            data.close()
+
         return web.json_response({'id': hashed, 'url': res_url})
 
     bg = BACKGROUNDS.get(_font, DEFAULT_BG).copy()
@@ -190,7 +175,6 @@ if not os.path.exists('./config.yaml'):
             'default_font': os.environ['DEFAULT_FONT'],
             'default_bg': os.environ['DEFAULT_BG'],
             'cdn': os.environ['CDN'],
-            'redisHost': os.environ['REDIS_URL' or 'REDISCLOUD_URL']
             'result_url': os.environ['RESULT_URL'],
             'cache': True if os.environ['CACHE'].lower() == 'true' else False,
             'port': int(os.environ['PORT'])
