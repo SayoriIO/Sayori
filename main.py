@@ -166,7 +166,7 @@ async def handle_request(req):
            with redis.get(f'poem:{hashed}') as data:
                if os.path.exists(hashed_path):
                   print('ignoring secondary cache recovery.')
-                else:
+               else:
                   open(hashed_path)
                   data.write(data)
                   data.close()
