@@ -144,11 +144,11 @@ async def handle_request(req):
     hashed_path = f'./poems/{hashed}.png'
     
     # Save to redis
-  if CACHE:
-    output = StringIO.StringIO()
-    im = Image.open(f'./poems/{hashed}.png')
-    im.save(output, format=im.format)
-    redis.set(f'poem:{hashed}', output.getvalue(), ex=259200)
+    if CACHE:
+      output = StringIO.StringIO()
+      im = Image.open(f'./poems/{hashed}.png')
+      im.save(output, format=im.format)
+      redis.set(f'poem:{hashed}', output.getvalue(), ex=259200)
 
     if os.path.exists(hashed_path) and CACHE:
         res_url = f'{RESULT_URL}/poems/{hashed}.png'
