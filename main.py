@@ -19,6 +19,7 @@ from PIL import Image, ImageDraw, ImageFont
 from concurrent.futures import ThreadPoolExecutor
 from urllib.parse import urlparse
 
+redis = redis.StrictRedis(host=config[redis_host])
 
 # API Overview
 # ------------
@@ -150,9 +151,7 @@ async def handle_request(req):
     output = StringIO.StringIO()
     im = Image.open(f'./poems/{hashed}.png')
     im.save(output, format=im.format)
-
-    redis = redis.StrictRedis(host=config[redisHost])
-    r.set(f'poem:{hashed}', output.getvalue(), ex=604800)
+    redis.set(f'poem:{hashed}', output.getvalue(), ex=604800)
 
     if os.path.exists(hashed_path) and redis.exists(f'poem:{hashed}') and CACHE:
         res_url = f'{RESULT_URL}/poems/{hashed}.png'
@@ -189,7 +188,7 @@ if not os.path.exists('./config.yaml'):
             'default_font': os.environ['DEFAULT_FONT'],
             'default_bg': os.environ['DEFAULT_BG'],
             'cdn': os.environ['CDN'],
-            'redisHost': os.environ['REDIS_URL' or 'REDISCLOUD_URL']
+            'redis_host': os.environ['REDIS_URL' or 'REDISCLOUD_URL']
             'result_url': os.environ['RESULT_URL'],
             'cache': True if os.environ['CACHE'].lower() == 'true' else False,
             'port': int(os.environ['PORT'])
