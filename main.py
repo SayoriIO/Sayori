@@ -217,6 +217,8 @@ if is_url(config['cdn']):
 elif os.environ.get(config['cdn']):
     RESULT_URL = os.environ[config['cdn']]
     CACHE = True
+elif os.environ.get(config['redis_host'])
+    REDIS_URL = os.environ[config['redis_host']]
 
 # Cache the fonts and backgrounds.
 FONTS = {
