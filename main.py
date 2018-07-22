@@ -10,9 +10,8 @@ import shutil
 import hashlib
 import pickle
 import redis
-import StringIO
 
-from io import BytesIO
+from io import BytesIO, StringIO
 from aiohttp import web
 from PIL import Image, ImageDraw, ImageFont
 from concurrent.futures import ThreadPoolExecutor
