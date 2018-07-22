@@ -191,7 +191,7 @@ if not os.path.exists('./config.yaml'):
             'default_font': os.environ['DEFAULT_FONT'],
             'default_bg': os.environ['DEFAULT_BG'],
             'cdn': os.environ['CDN'],
-            'redis_host': os.environ['REDIS_URL'] or os.environ['REDISCLOUD_URL'],
+            'redis_host': os.environ['REDIS_URL'],
             'result_url': os.environ['RESULT_URL'],
             'cache': True if os.environ['CACHE'].lower() == 'true' else False,
             'port': int(os.environ['PORT'])
@@ -210,7 +210,7 @@ DEFAULT_FONT = config['default_font']
 DEFAULT_BG = Image.open('./backgrounds/' + config['default_bg'])
 
 CACHE = config['cache']
-redis = redis.StrictRedis(host=config['redis_host'] or os.environ['REDIS_URL'])
+redis = redis.StrictRedis(host=config['redis_host'])
 RESULT_URL = config['result_url']  # If there is a CDN specified, this gets overwritten.
 
 # If the cdn option is a URL, set RESULT_URL to it,
