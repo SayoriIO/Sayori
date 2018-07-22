@@ -156,6 +156,9 @@ async def handle_request(req):
     if os.path.exists(hashed_path) and redis.exists(f'poem:{hashed}') and CACHE:
         res_url = f'{RESULT_URL}/poems/{hashed}.png'
         with redis.get(f'poem:{hashed}') as data:
+          if os.path.exists(hashed_path):
+              print('ignoring secondary cache recovery.')
+          else:
             open(hashed_path)
             data.write(data)
             data.close()
