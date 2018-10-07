@@ -29,7 +29,6 @@ Requests can either be a GET or a POST, with the former being allowed to support
 Both methods of submitting data are supported with both methods, however most things that send a GET will only allow the query string method (as far as I am aware).
 """
 
-
 def is_url(url):
     res = urlparse(url)
     return (res.scheme and res.scheme in ['https', 'http']) and res.netloc
@@ -89,7 +88,7 @@ def gen_img(poem, font, bg):
         bg = bg.resize((bg.width, height), Image.BICUBIC)
         draw = ImageDraw.Draw(bg)
 
-    draw.text((PADDING , PADDING), poem, '#000000', font)
+    draw.text((PADDING , PADDING-OFFSET), poem, '#000000', font)
     bg.save(b, 'png')
     b.seek(0)
 
@@ -189,6 +188,7 @@ if os.path.exists('./config.yaml'):
         config = yaml.load(c)
 
 PADDING = config['padding'] # px
+OFFSET = PADDING // 4
 DEFAULT_FONT = config['default_font']
 DEFAULT_BG = Image.open('./backgrounds/' + config['default_bg'])
 
