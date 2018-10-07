@@ -81,14 +81,14 @@ def gen_img(poem, font, bg):
     draw = ImageDraw.Draw(bg)
 
     b = BytesIO()
-    poem = break_text(poem, font, bg.width - PADDING * 2)
+    poem = break_text(poem, font, bg.width - PADDING * 2 + OFFSET)
     height = max(bg.height, draw.textsize(poem, font)[1] + PADDING * 2)
 
     if height > bg.height:
         bg = bg.resize((bg.width, height), Image.BICUBIC)
         draw = ImageDraw.Draw(bg)
 
-    draw.text((PADDING , PADDING-OFFSET), poem, '#000000', font)
+    draw.text((PADDING-OFFSET , PADDING), poem, '#000000', font)
     bg.save(b, 'png')
     b.seek(0)
 
