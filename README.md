@@ -30,4 +30,4 @@ If you can't be assed to download the game (if you haven't already) and extract 
 And if you even can't be arsed to do anything, we made a Heroku button especially for deploying your own version of Sayori.
 
 
-[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/MonikaDesu/Sayori)
+[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/SayoriIO/Sayori)
