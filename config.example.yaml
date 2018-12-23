@@ -2,6 +2,7 @@ default_font: 'm1' # Default font to use if not specified.
 default_bg: 'poem.jpg' # Defualt background if one is not found for the font.
 padding: 100 # Space around edges, in pixels. Default: 100
 cdn: 'EDGE_URL' # Either an environment variable name, or a valid URL. If it is a URL, it shouldn't have a path given, unless thats how that particular CDN works, as the cache folder will be appended automatically. EG. 'EDGE_URL' for getting the URL of the Edge CDN being used if on Heroku, or 'https://d3vam04na8c92l.cloudfront.net'.
+redis_host: '' # Your Redis Host. This is automatically filled by REDIS_URL in heroku.
 result_url: 'https://example.com' # URL to give when caching images while not behind a CDN.
 cache: true # Whether the cache images or not. Will always be true if a CDN is set/found.
 port: 8080 # Port to run the server on.
