@@ -1,6 +1,6 @@
 """
 DDLC-style poem generator written in Python, replacing the original Lua one by FiniteReality.
-Created by Ovyerus (https://github.com/Ovyerus) and Capuccino (https://github.com/sr229) and licensed under the MIT License.
+Created by Ovyerus (https://github.com/Ovyerus) and licensed under the MIT License.
 """
 import os
 import json
@@ -8,8 +8,11 @@ import asyncio
 import yaml
 import shutil
 import hashlib
+<<<<<<< HEAD
 import pickle
 import redis
+=======
+>>>>>>> master
 
 from io import BytesIO, StringIO
 from aiohttp import web
@@ -28,7 +31,6 @@ from urllib.parse import urlparse
 # Requests can either be a GET or a POST, with the former being allowed to support browsers.
 # Both methods of submitting data are supported with both methods,
 # however most things that send a GET will only allow the query string method (as far as I am aware).
-
 
 def is_url(url):
     res = urlparse(url)
@@ -82,14 +84,18 @@ def gen_img(poem, font, bg):
     draw = ImageDraw.Draw(bg)
 
     b = BytesIO()
-    poem = break_text(poem, font, bg.width - PADDING * 2)
+    poem = break_text(poem, font, bg.width - PADDING * 2 + OFFSET)
     height = max(bg.height, draw.textsize(poem, font)[1] + PADDING * 2)
 
     if height > bg.height:
         bg = bg.resize((bg.width, height), Image.BICUBIC)
         draw = ImageDraw.Draw(bg)
 
+<<<<<<< HEAD
     draw.text((PADDING, PADDING), poem, '#000000', font)
+=======
+    draw.text((PADDING-OFFSET , PADDING), poem, '#000000', font)
+>>>>>>> master
     bg.save(b, 'png')
     b.seek(0)
 
@@ -142,6 +148,7 @@ async def handle_request(req):
     _font = body.get('font', DEFAULT_FONT)
     hashed = hashlib.md5((body['poem'] + _font).encode('utf8')).hexdigest()
     hashed_path = f'./poems/{hashed}.png'
+<<<<<<< HEAD
     
     # Save to redis
     if CACHE:
@@ -152,6 +159,12 @@ async def handle_request(req):
 
     if os.path.exists(hashed_path) and CACHE:
         res_url = f'{RESULT_URL}/poems/{hashed}.png'
+=======
+
+    if os.path.exists(hashed_path) and CACHE:
+        res_url = f'{RESULT_URL}/poems/{hashed}.png'
+
+>>>>>>> master
         return web.json_response({'id': hashed, 'url': res_url})
 
     bg = BACKGROUNDS.get(_font, DEFAULT_BG).copy()
@@ -191,7 +204,10 @@ if not os.path.exists('./config.yaml'):
             'default_font': os.environ['DEFAULT_FONT'],
             'default_bg': os.environ['DEFAULT_BG'],
             'cdn': os.environ['CDN'],
+<<<<<<< HEAD
             'redis_host': os.environ['REDIS_URL'],
+=======
+>>>>>>> master
             'result_url': os.environ['RESULT_URL'],
             'cache': True if os.environ['CACHE'].lower() == 'true' else False,
             'port': int(os.environ['PORT'])
@@ -205,7 +221,12 @@ if os.path.exists('./config.yaml'):
     with open('./config.yaml') as c:
         config = yaml.load(c)
 
+<<<<<<< HEAD
 PADDING = config['padding']  # px
+=======
+PADDING = config['padding'] # px
+OFFSET = PADDING // 4
+>>>>>>> master
 DEFAULT_FONT = config['default_font']
 DEFAULT_BG = Image.open('./backgrounds/' + config['default_bg'])
 

@@ -16,7 +16,7 @@
       "url": "heroku/python"
     }, 
     {
-      "url": "https://github.com/MonikaDesu/Sayori-buildpack.git"
+      "url": "https://github.com/SayoriIO/Sayori-buildpack.git"
     }
   ]
 }
