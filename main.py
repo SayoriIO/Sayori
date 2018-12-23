@@ -150,7 +150,7 @@ async def handle_request(req):
       im.save(output, format=im.format)
       redis.set(f'poem:{hashed}', output.getvalue(), ex=259200)
 
-    if os.path.exists(hashed_path) and CACHE:
+    if os.path.exists(hashed_path):
         res_url = f'{RESULT_URL}/poems/{hashed}.png'
         return web.json_response({'id': hashed, 'url': res_url})
 
