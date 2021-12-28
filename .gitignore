@@ -6,3 +6,5 @@ resources.zip
 config.yaml
 poems/
 deploy-*.yml
+.venv/
+.vercel
