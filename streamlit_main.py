@@ -1,6 +1,9 @@
 import streamlit as st
 import image
 
+# SEO stuff
+st.set_page_config(page_title="Sayori Poem Generator - Powered by Streamlit", page_icon="💖", layout="centered")
+
 # Our header is a Markdown file so let's use that instead.
 st.markdown(open("STREAMLIT_HEADER.md").read())
 
