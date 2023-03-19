@@ -35,6 +35,8 @@ def bgName2ID(bg):
         return "y1"
     elif bg == "Yuri (Obsessed)":
         return "y2"
+    else:
+        return "default"
 
 if st.button("Generate"):
   # Don't do anything if all variables are empty
