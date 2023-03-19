@@ -23,3 +23,8 @@ Sayori requires a modern Python installation to work. It is recommended to use P
 ```bash
     $ pip install -r requirements.txt
 ```
+## Copyright
+
+Copyright &copy; 2023 Ayase Minori. All Rights Reserved. Licensed under the MIT License. See [LICENSE](./LICENSE) for more information.
+
+Assets used in this project are property of Team Salvato and are used for educational purposes only. No infringement intended.
