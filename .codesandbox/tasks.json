@@ -5,9 +5,14 @@
   // These tasks can be run from CodeSandbox. Running one will open a log in the app.
   "tasks": {
     "start": {
-      "name": "start",
-      "command": "python main.py",
-      "runAtStart": true
+      "name": "Start Streamlit Frontend",
+      "command": "streamlit run streamlit_main.py",
+      "runAtStart": true,
+
+      "preview": {
+        "port": 8501,
+        "prLink": "direct"
+      }
     }
   }
 }
