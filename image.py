@@ -16,6 +16,11 @@ FONTS = {
     'y3': ImageFont.truetype('./fonts/y3.ttf', 18) # Yuri (Obsessed)
 }
 
+BACKGROUNDS = {
+    'default': 'default',
+    'y2': 'y2',
+    'y3': 'y3'
+}
 
 def break_text(text: str, font: str, max_width: int):
     fnt: ImageFont.FreeTypeFont = FONTS.get(font) # type: ignore
