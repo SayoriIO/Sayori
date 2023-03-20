@@ -5,6 +5,7 @@ import redis
 import asyncio
 import gzip
 import logging
+import json
 
 from io import StringIO
 from PIL import Image
@@ -12,7 +13,7 @@ from aiohttp import web
 from concurrent.futures import ThreadPoolExecutor
 
 # Redis cache, defaults to localhost
-CACHE = redis.Redis(host=os.environ.get('REDIS_URL') or 'redis://localhost:6379', db=0)
+CACHE = redis.StrictRedis(host=os.environ.get('REDIS_URL') or 'localhost', db=0)
 loop = asyncio.new_event_loop()
 # Scale workers to the amount of CPU present in the host
 executor = ThreadPoolExecutor(max_workers=os.cpu_count())
@@ -36,23 +37,26 @@ async def handle_post(req):
     is_json = True
 
     if not body:
-       body = req.query
-       is_json = False
-    
+        body = req.query
+        is_json = False
+
     if not body:
-        return web.json_response({'error': 'No body or query parameters provided'}, status=400)
+        return web.json_response({'error': 'No body or query string.', 'code': 0}, status=400)
+
+    if is_json:
+        body = json.loads(body)
 
     if 'poem' not in body:
-        return web.json_response({'error': 'No poem provided'}, status=400)
-    
+        return web.json_response({'error': 'Missing required field: "poem".', 'code': 1}, status=400)
+
     if not isinstance(body['poem'], str):
-        return web.json_response({'error': 'Poem must be a string'}, status=400)
-    
+        return web.json_response({'error': 'Field "poem" is not a string.', 'code': 2}, status=400)
+
     if not body['poem']:
-        return web.json_response({'error': 'Poem cannot be empty'}, status=400)
-    
-    if 'font' in  body and body['font'] not in image.FONTS:
-        return web.json_response({'error': 'Invalid font'}, status=400)
+        return web.json_response({'error': 'Field "poem" is empty.', 'code': 3}, status=400)
+
+    if 'font' in body and body['font'] not in image.FONTS:
+        return web.json_response({'error': 'Unsupported font.', 'valid_fonts': FONTS.keys(), 'code': 4}, status=400)
     
     if body.get('bg') not in image.BACKGROUNDS:
         # ignore setting and just fallback immediately to default
@@ -69,7 +73,7 @@ async def handle_post(req):
         web.Response(status=302, headers={'Location': '/p/' + hash})
     else:
         # Generate the image
-        im = await loop.run_in_executor(executor, image.generate, poem, font, bg)
+        im = await loop.run_in_executor(executor, image.generate_image(poem, font, bg))
 
         # Give it an expiry of 6 hours to save space
         CACHE.set(str(hash), gzip.compress(im.getvalue()), ex=21600)
