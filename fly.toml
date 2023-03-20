@@ -7,7 +7,7 @@ primary_region = "hkg"
 processes = []
 
 [build]
-  builder = "paketobuildpacks/builder:base"
+  dockerfile="flyctl.dockerfile"
 
 [env]
   PORT = "8080"
