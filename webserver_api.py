@@ -1,3 +1,16 @@
+#!/usr/bin/env python3
+# API Overview
+# ------------
+
+# There are three accepted parameters, `poem`, `font` and `bg`.
+# `poem` is the only required parameter, and specifies the content of the poem to generate.
+# `font` is optional, and if it is not a supported font, it will default to DEFAULT_FONT (usually `m1`).
+# `bg` is optional, and if it is not a supported background, it will default to the default background.
+# Parameters can either be sent by a JSON body, or by a query string (?poem=Hello%20world&font=y1&bg=y2)
+
+# Requests can either be a GET or a POST, with the former being allowed to support browsers.
+# Both methods of submitting data are supported with both methods,
+# however most things that send a GET will only allow the query string method (as far as I am aware).
 import image
 import os
 import hashlib
@@ -6,31 +19,18 @@ import asyncio
 import gzip
 import logging
 import json
+import aiohttp_cors
 
-from io import StringIO
+from io import StringIO, BytesIO
 from PIL import Image
 from aiohttp import web
 from concurrent.futures import ThreadPoolExecutor
 
 # Redis cache, defaults to localhost
-CACHE = redis.StrictRedis(host=os.environ.get('REDIS_URL') or 'localhost', db=0)
+CACHE = redis.StrictRedis(host=os.environ.get('REDIS_URL') or 'localhost')
 loop = asyncio.new_event_loop()
 # Scale workers to the amount of CPU present in the host
 executor = ThreadPoolExecutor(max_workers=os.cpu_count())
-
-@web.middleware
-async def cors_middleware(req, handler):
-    resp = await handler(req)
-    resp.headers['Access-Control-Allow-Origin'] = '*'
-    resp.headers['Access-control-Allow-Methods'] = 'GET, POST, OPTIONS'
-    resp.headers['Access-Control-Allow-Headers'] = 'Content-Type'
-
-    return resp
-
-# Return 200 to allow option requests to pass through
-# The CORS middleware above sets the appropriate headers
-async def handle_options(req):
-    return web.Response(status=200)
 
 async def handle_post(req):
     body = await req.text()
@@ -65,21 +65,21 @@ async def handle_post(req):
     poem = body['poem']
     font = body.get('font', image.DEFAULT_FONT)
     bg = body['bg'] or image.BACKGROUNDS['default']
+    output = StringIO()
     hash = hashlib.md5((body['poem'] + font + bg).encode('utf-8')).hexdigest()
 
     # Check if the image is cached
     if CACHE.exists(hash):
-        # Redirect to GET route
-        web.Response(status=302, headers={'Location': '/p/' + hash})
+        # We already generated this before, so 302 to the cached image
+        return web.json_response({'url': f'/p/{hash}'}, status=200)
     else:
-        # Generate the image
         im = await loop.run_in_executor(executor, image.generate_image(poem, font, bg))
-
         # Give it an expiry of 6 hours to save space
-        CACHE.set(str(hash), gzip.compress(im.getvalue()), ex=21600)
+        im.save(output, format=im.format)
+        CACHE.set(str(hash), gzip.compress(im), ex=21600)
 
-        # Redirect to GET route
-        return web.Response(status=302, headers={'Location': '/p/' + hash})
+        
+        return web.json_response({'url': f'/p/{hash}'}, status=200)
 
 
 async def handle_get(req):
@@ -89,21 +89,28 @@ async def handle_get(req):
     if not CACHE.exists(hash):
         return web.Response(message="", status=404)
     else:
-        output = StringIO()
-        im = Image.open(gzip.decompress((CACHE.get(hash))))
-        im.save(output, format=im.format)
+        data = gzip.decompress(CACHE.get(hash))
+        im = BytesIO(data)
 
-        return web.Response(body=output.getvalue(), content_type='image/png')
+        return web.json_response(body=im, status=200, content_type='image/png')
 
 # Finally setup routes and start the server
-app = web.Application(middlewares=[cors_middleware])
+app = web.Application()
 logger = logging.getLogger('aiohttp.access')
 
 app.router.add_route('GET', '/p/{hash}', handle_get)
-app.router.add_route('POST', '/p', handle_post)
-app.router.add_route('OPTIONS', '/p', handle_options)
+app.router.add_route('POST', '/generate', handle_post)
 
-logging.basicConfig(format= '%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.DEBUG)
+# Setup CORS
+aiohttp_cors.setup(app, defaults={
+    "*": aiohttp_cors.ResourceOptions(
+        allow_methods=["GET", "POST", "OPTIONS"],
+        expose_headers="*",
+        allow_headers="*",
+    )
+})
+
+logging.basicConfig(format= '%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
 
 if __name__ == '__main__':
     logger.info(f"Starting server on port {os.environ.get('PORT') or 7270}")
