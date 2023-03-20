@@ -14,7 +14,9 @@ Sayori can generate images with the following parameters:
 - The characters' writing styles (Monika (by default), Sayori, Natsuki, Yuri (and her obsessed variants))
 
 ## Try it for yourself!
-Sayori is hosted on [Streamlit!](https://sayori.streamlit.app/) An API frontend to allow you to use it programmatically is coming soon!
+Sayori is hosted on [Streamlit!](https://sayori.streamlit.app/)
+
+However, if you want to integrate the project to your application, a hosted frontend is available as well! You can find it [here](https://sayori.vercel.app).
 
 ## Installation
 

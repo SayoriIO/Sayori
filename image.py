@@ -1,6 +1,9 @@
 from PIL import Image, ImageDraw, ImageFont
 from io import BytesIO
-
+"""
+    Shared code between all frontend. This handles image generation and text handling. At best, all shared code must be in this file
+    to prevent any code duplication.
+"""
 
 PADDING = 100  # px, the spacing between the text and the edge of the image
 # No need to worry about this, the offset is just to make the text look better
@@ -16,6 +19,11 @@ FONTS = {
     'y3': ImageFont.truetype('./fonts/y3.ttf', 18) # Yuri (Obsessed)
 }
 
+BACKGROUNDS = {
+    'default': 'default',
+    'y2': 'y2',
+    'y3': 'y3'
+}
 
 def break_text(text: str, font: str, max_width: int):
     fnt: ImageFont.FreeTypeFont = FONTS.get(font) # type: ignore
@@ -60,19 +68,6 @@ def break_text(text: str, font: str, max_width: int):
         wrapped.append(tmp.strip())
 
     return '\n'.join(wrapped)
-
-
-"""
-API Overview
-------------
-There are two accepted parameters, `poem` and `font`.
-`poem` is the only required parameter, and specifies the content of the poem to generate.
-`font` is optional, and if it is not a supported font, it will default to DEFAULT_FONT (usually `m1`).
-Parameters can either be sent by a JSON body, or by a query string (?poem=Hello%20world&font=y1)
-Requests can either be a GET or a POST, with the former being allowed to support browsers.
-Both methods of submitting data are supported with both methods, however most things that send a GET will only allow the query string method (as far as I am aware).
-"""
-
 
 def generate_image(poem: str, font: str, bg: str) -> BytesIO:
     img = Image.open(f'./backgrounds/poem_{bg}.jpg')
