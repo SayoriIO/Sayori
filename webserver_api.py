@@ -21,8 +21,7 @@ import logging
 import json
 import aiohttp_cors
 
-from io import StringIO, BytesIO
-from PIL import Image
+from io import BytesIO
 from aiohttp import web
 from concurrent.futures import ThreadPoolExecutor
 
@@ -69,8 +68,9 @@ async def handle_post(req):
     poem = body['poem']
     font = body.get('font', image.DEFAULT_FONT)
     bg = body['bg'] or image.BACKGROUNDS['default']
-    output = StringIO()
-    hash = hashlib.md5((body['poem'] + font + bg).encode('utf-8')).hexdigest()
+    # trim hash if its more than 64 characters
+    hash = hashlib.md5((body['poem']).encode('utf-8')).hexdigest()[:64]
+
 
     # Check if the image is cached
     if CACHE.exists(hash):
