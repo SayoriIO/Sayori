@@ -13,6 +13,15 @@
         "port": 8501,
         "prLink": "direct"
       }
+    },
+    "start-api": {
+      "name": "Start API Server Frontend",
+      "command": "python webserver_api.py",
+
+      "preview": {
+        "port": 7270,
+        "prLink": "direct"
+      }
     }
   }
 }
