@@ -93,13 +93,16 @@ async def handle_get(req):
 
 # Finally setup routes and start the server
 app = web.Application(middlewares=[cors_middleware])
+logger = logging.getLogger('aiohttp.access')
 
 app.router.add_route('GET', '/p/{hash}', handle_get)
 app.router.add_route('POST', '/p', handle_post)
 app.router.add_route('OPTIONS', '/p', handle_options)
 
+logging.basicConfig(format= '%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.DEBUG)
+
 if __name__ == '__main__':
-    logging.info(f"Starting server on port {os.environ.get('PORT') or 7270}")
-    logging.info(f"Using {os.cpu_count()} workers")
-    logging.info(f"Using Redis at {os.environ.get('REDIS_URL') or 'redis://localhost:6379'}")
+    logger.info(f"Starting server on port {os.environ.get('PORT') or 7270}")
+    logger.info(f"Using {os.cpu_count()} workers")
+    logger.info(f"Using Redis at {os.environ.get('REDIS_URL') or 'redis://localhost:6379'}")
     web.run_app(app, port=int(os.environ.get('PORT') or 7270))
