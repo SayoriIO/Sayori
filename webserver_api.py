@@ -71,6 +71,8 @@ async def handle_post(req):
     # trim hash if its more than 64 characters
     hash = hashlib.md5((body['poem']).encode('utf-8')).hexdigest()[:64]
 
+    # This is to debug whatever weirdness other platforms has, sigh
+    logger.info(f"Attempting req_HASH: {hash}")
 
     # Check if the image is cached
     if CACHE.exists(hash):
