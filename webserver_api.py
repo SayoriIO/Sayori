@@ -44,7 +44,11 @@ async def handle_post(req):
         return web.json_response({'error': 'No body or query string.', 'code': 0}, status=400)
 
     if is_json:
-        body = json.loads(body)
+        # JSON might not be valid, let's check first
+        try:
+            body = json.loads(body)
+        except ValueError as e:
+            return web.json_response({'error': 'Invalid request.', 'code': 5}, status=400)
 
     if 'poem' not in body:
         return web.json_response({'error': 'Missing required field: "poem".', 'code': 1}, status=400)
@@ -56,7 +60,7 @@ async def handle_post(req):
         return web.json_response({'error': 'Field "poem" is empty.', 'code': 3}, status=400)
 
     if 'font' in body and body['font'] not in image.FONTS:
-        return web.json_response({'error': 'Unsupported font.', 'valid_fonts': FONTS.keys(), 'code': 4}, status=400)
+        return web.json_response({'error': 'Unsupported font.', 'valid_fonts': image.FONTS.keys(), 'code': 4}, status=400)
     
     if body.get('bg') not in image.BACKGROUNDS:
         # ignore setting and just fallback immediately to default
@@ -73,11 +77,13 @@ async def handle_post(req):
         # We already generated this before, so 302 to the cached image
         return web.json_response({'url': f'/p/{hash}'}, status=200)
     else:
-        im = await loop.run_in_executor(executor, image.generate_image(poem, font, bg))
+        im = image.generate_image(poem, font, bg)
         # Give it an expiry of 6 hours to save space
-        im.save(output, format=im.format)
-        CACHE.set(str(hash), gzip.compress(im), ex=21600)
+        CACHE.set(str(hash), gzip.compress(im.getvalue()), ex=21600)
 
+        # Dispose the buffer to save some bytes.
+        im.flush()
+        im.close()
         
         return web.json_response({'url': f'/p/{hash}'}, status=200)
 
@@ -87,12 +93,12 @@ async def handle_get(req):
     hash = req.match_info['hash']
 
     if not CACHE.exists(hash):
-        return web.Response(message="", status=404)
+        return web.Response(body="Not found.", status=404)
     else:
-        data = gzip.decompress(CACHE.get(hash))
+        data = gzip.decompress(CACHE.get(hash)) # type: ignore
         im = BytesIO(data)
 
-        return web.json_response(body=im, status=200, content_type='image/png')
+        return web.json_response(body=im.getvalue(), status=200, content_type='image/png')
 
 # Finally setup routes and start the server
 app = web.Application()
