@@ -16,7 +16,7 @@ Sayori can generate images with the following parameters:
 ## Try it for yourself!
 Sayori is hosted on [Streamlit!](https://sayori.streamlit.app/)
 
-However, if you want to integrate the project to your application, a hosted frontend is available as well! You can find it [here](https://sayori.vercel.app).
+However, if you want to integrate the project to your application, a hosted frontend is available as well! You can find it [here](sayori.fly.dev).
 
 ## Installation
 
