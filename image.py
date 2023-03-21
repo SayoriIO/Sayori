@@ -5,18 +5,18 @@ from io import BytesIO
     to prevent any code duplication.
 """
 
-PADDING = 100  # px, the spacing between the text and the edge of the image
+PADDING = 60  # px, the spacing between the text and the edge of the image
 # No need to worry about this, the offset is just to make the text look better
 OFFSET = PADDING // 4
 DEFAULT_FONT = 'm1'
 DEFAULT_BG = Image.open('./backgrounds/' + 'poem_default.jpg')
 FONTS = {
-    'm1': ImageFont.truetype('./fonts/m1.ttf', 34), # Monika
-    's1': ImageFont.truetype('./fonts/s1.ttf', 34), # Sayori
-    'n1': ImageFont.truetype('./fonts/n1.ttf', 28), # Natsuki
-    'y1': ImageFont.truetype('./fonts/y1.ttf', 32), # Yuri (Normal)
-    'y2': ImageFont.truetype('./fonts/y2.ttf', 40), # Yuri (Fast)
-    'y3': ImageFont.truetype('./fonts/y3.ttf', 18) # Yuri (Obsessed)
+    'm1': ImageFont.truetype('./fonts/m1.ttf', 34),  # Monika
+    's1': ImageFont.truetype('./fonts/s1.ttf', 34),  # Sayori
+    'n1': ImageFont.truetype('./fonts/n1.ttf', 28),  # Natsuki
+    'y1': ImageFont.truetype('./fonts/y1.ttf', 32),  # Yuri (Normal)
+    'y2': ImageFont.truetype('./fonts/y2.ttf', 40),  # Yuri (Fast)
+    'y3': ImageFont.truetype('./fonts/y3.ttf', 18)  # Yuri (Obsessed)
 }
 
 BACKGROUNDS = {
@@ -25,8 +25,9 @@ BACKGROUNDS = {
     'y3': 'y3'
 }
 
+
 def break_text(text: str, font: str, max_width: int):
-    fnt: ImageFont.FreeTypeFont = FONTS.get(font) # type: ignore
+    fnt: ImageFont.FreeTypeFont = FONTS.get(font)  # type: ignore
     word_list = text.split(' ')
     tmp = ''
     wrapped = []
@@ -68,6 +69,7 @@ def break_text(text: str, font: str, max_width: int):
         wrapped.append(tmp.strip())
 
     return '\n'.join(wrapped)
+
 
 def generate_image(poem: str, font: str, bg: str) -> BytesIO:
     img = Image.open(f'./backgrounds/poem_{bg}.jpg')
