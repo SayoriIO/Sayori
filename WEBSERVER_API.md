@@ -6,12 +6,12 @@ To make a poem at the API endpoint, simply make a POST request with either a JSO
 ### JSON
 
 ```bash
-curl -X POST -H "Content-Type: application/json" -d '{"poem" : "test", "font": "m1", "bg": "default"}' http://localhost:7270/generate --verbose
+curl -X POST -H "Content-Type: application/json" -d '{"poem" : "test", "font": "m1", "bg": "default"}' http://localhost:7270/g --verbose
 ```
 ### Query Parameters
 
 ```bash
-curl -X POST  http://localhost:7270/generate?poem=Hello%20world&font=y1&bg=y2 --verbose
+curl -X GET  http://localhost:7270/g?poem=Hello%20world&font=y1&bg=y2 --verbose
 ```
 
 ## Accepted Parameters

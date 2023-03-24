@@ -16,7 +16,7 @@
     },
     "start-api": {
       "name": "Start API Server Frontend",
-      "command": "python webserver_api.py",
+      "command": "redis & python webserver_api.py",
 
       "preview": {
         "port": 7270,
