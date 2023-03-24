@@ -1,6 +1,6 @@
 FROM python:latest
 
-RUN apt update &&  apt -y install curl redis
+RUN apt update &&  apt -y install redis
 
 USER root
 
