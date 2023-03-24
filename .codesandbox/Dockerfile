@@ -1,5 +1,7 @@
-FROM python:3.11.1
+FROM python:latest
 
-RUN apt update &&  apt install curl && \
-    pip install -r requirements.txt & \
-    curl -L https://fly.io/install.sh | sh;
+RUN apt update &&  apt -y install curl
+
+USER root
+
+RUN curl -L https://fly.io/install.sh | sh;
