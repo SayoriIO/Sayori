@@ -60,16 +60,13 @@ async def handle_post(req):
 
     if 'font' in body and body['font'] not in image.FONTS:
         return web.json_response({'error': 'Unsupported font.', 'valid_fonts': image.FONTS.keys(), 'code': 4}, status=400)
-    
-    if body.get('bg') not in image.BACKGROUNDS:
-        # ignore setting and just fallback immediately to default
-        body['bg'] = None
+
 
     poem = body['poem']
     font = body.get('font', image.DEFAULT_FONT)
-    bg = body['bg'] or image.BACKGROUNDS['default']
+    bg = body.get('bg', image.BACKGROUNDS['default'])
     # trim hash if its more than 64 characters
-    hash = hashlib.md5((body['poem']).encode('utf-8')).hexdigest()[:64]
+    hash = hashlib.md5((body['poem']).encode('utf-8')).hexdigest()[:64]    
 
     # This is to debug whatever weirdness other platforms has, sigh
     logger.info(f"Attempting req_HASH: {hash}")
@@ -107,7 +104,12 @@ app = web.Application()
 logger = logging.getLogger('aiohttp.access')
 
 app.router.add_route('GET', '/p/{hash}', handle_get)
-app.router.add_route('POST', '/generate', handle_post)
+app.router.add_route('POST', '/g', handle_post)
+
+# This is for compatibility reasons with the old version of Sayori
+# As the old version allowed generation via a GET method with params.
+# ie. /g?poem=Test&font=m1
+app.router.add_route('GET', '/g', handle_post)
 
 # Setup CORS
 aiohttp_cors.setup(app, defaults={

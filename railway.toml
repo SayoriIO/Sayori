@@ -4,6 +4,6 @@ buildCommand = "PIPENV_VENV_IN_PROJECT=1 pipenv install --deploy"
 
 [deploy]
 startCommand = "python webserver_api.py"
-healthcheckPath = "/"
+healthcheckPath = "/?poem=Hello&font=m1"
 healthcheckTimeout = 2000
 restartPolicyType = "never"
