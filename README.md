@@ -25,6 +25,13 @@ Sayori requires a modern Python installation to work. It is recommended to use P
 ```bash
     $ pip install -r requirements.txt
 ```
+
+To run the web application, simply run 
+
+```bash
+   $ streamlit run streamlit_main.py
+```
+
 ## Copyright
 
 Copyright &copy; 2023 Ayase Minori. All Rights Reserved. Licensed under the MIT License. See [LICENSE](./LICENSE) for more information.
