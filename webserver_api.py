@@ -12,17 +12,10 @@
 # Both methods of submitting data are supported with both methods,
 # however most things that send a GET will only allow the query string method (as far as I am aware).
 import os
-import hashlib
 import image
-import gzip
-import redis
-import logging
 
-from io import BytesIO
 from flask import Flask, Request, Response, request
 
-# Redis cache, defaults to localhost
-CACHE = redis.StrictRedis(host=str(os.environ.get('REDIS_URL')) or 'localhost')
 app = Flask(__name__)
 
 
@@ -45,26 +38,9 @@ async def handle_request(req: Request = request):
     poem = body['poem']
     font = body.get('font', image.DEFAULT_FONT)
     bg = body.get('bg', image.BACKGROUNDS['default'])
-    # trim hash if its more than 64 characters
-    hash = hashlib.md5((body['poem']).encode('utf-8')).hexdigest()[:64]
+    im = image.generate_image(poem, font, bg)
 
-    # Check if the image is cached
-    if CACHE.exists(hash):
-        # We already generated this before, so just grab it from Redis
-        data = gzip.decompress(CACHE.get(hash))  # type: ignore
-        im = BytesIO(data)
-
-        return Response(im.getvalue(), status=200, content_type='image/png')
-    else:
-        im = image.generate_image(poem, font, bg)
-        # Give it an expiry of 6 hours to save space
-        CACHE.set(str(hash), gzip.compress(im.getvalue()), ex=21600)
-
-        return Response(im.getvalue(), status=200, content_type='image/png')
-
-
-logging.basicConfig(
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
+    return Response(im.getvalue(), status=200, content_type='image/png')
 
 if __name__ == '__main__':
     app.logger.info(
