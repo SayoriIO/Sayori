@@ -7,39 +7,34 @@ st.set_page_config(page_title="Sayori Poem Generator - Powered by Streamlit", pa
 # Our header is a Markdown file so let's use that instead.
 st.markdown(open("STREAMLIT_HEADER.md").read())
 
-font = st.selectbox("Font", ["Monika", "Sayori", "Natsuki", "Yuri", "Yuri (Fast)", "Yuri (Obsessed)"])
-background = st.selectbox("Background", ["Default", "Yuri (Fast)", "Yuri (Obsessed)"])
+font_names = {
+    "Monika": "m1",
+    "Sayori": "s1",
+    "Natsuki": "n1",
+    "Yuri": "y1",
+    "Yuri (Fast)": "y2",
+    "Yuri (Obsessed)": "y3"
+}
+
+background_names = {
+    "Default": "default",
+    "Yuri (Fast)": "y1",
+    "Yuri (Obsessed)": "y2"
+}
+
+font = st.selectbox("Font", list(font_names.keys()))
+background = st.selectbox("Background", list(background_names.keys()))
 
 # Accept either a text file or direct input
 uploaded_file = st.file_uploader("Choose a file", type="txt")
 poem = st.text_area("Or paste your poem here", height=300)
 
-# Translate the font style to their respective IDs. 
+# Translate the font style to their respective IDs.
 def fontName2ID(fnt):
-    if fnt == "Monika":
-        return "m1"
-    elif fnt == "Sayori":
-        return "s1"
-    elif fnt == "Natsuki":
-        return "n1"
-    elif fnt == "Yuri":
-        return "y1"
-    elif fnt == "Yuri (Fast)":
-        return "y2"
-    elif fnt == "Yuri (Obsessed)":
-        return "y3"
-    else:
-        return "m1"
+    return font_names.get(fnt, "m1")
 
 def bgName2ID(bg):
-    if bg == "Default":
-        return "default"
-    elif bg == "Yuri (Fast)":
-        return "y1"
-    elif bg == "Yuri (Obsessed)":
-        return "y2"
-    else:
-        return "default"
+    return background_names.get(bg, "default")
 
 if st.button("Generate"):
   # Don't do anything if all variables are empty
