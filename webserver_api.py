@@ -14,20 +14,16 @@
 import os
 import hashlib
 import image
-import redis
 import gzip
+import redis
 import logging
-import json
 
 from io import BytesIO
 from flask import Flask, Request, Response, request
 
 # Redis cache, defaults to localhost
-CACHE = redis.StrictRedis(host=os.environ.get('REDIS_URL') or 'localhost')
+CACHE = redis.StrictRedis(host=str(os.environ.get('REDIS_URL')) or 'localhost')
 app = Flask(__name__)
-
-# FIXME: We get UnicodeDecodeError for every request, we will force ASCII to prevent some errors
-app.config['JSON_AS_ASCII'] = False
 
 
 @app.route('/', methods=['GET'])
