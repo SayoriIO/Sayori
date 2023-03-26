@@ -1,14 +1,10 @@
-## API Documentation 
+## API Documentation
 The Sayori webserver API only accepts three parameters: Mainly `poem`, `font`, and `bg`.
 
-To make a poem at the API endpoint, simply make a POST request with either a JSON or query parameters.
+To make a poem at the API endpoint, simply make a GET request with query parameters.
 
-### JSON
 
-```bash
-curl -X POST -H "Content-Type: application/json" -d '{"poem" : "test", "font": "m1", "bg": "default"}' http://localhost:7270/g --verbose
-```
-### Query Parameters
+### Example query
 
 ```bash
 curl -X GET  http://localhost:7270/g?poem=Hello%20world&font=y1&bg=y2 --verbose

@@ -2,7 +2,7 @@
    <img alt="Sayori" src="./sayori.png">
 </p>
 
-# Sayori - render your prose/poems like it's Doki Doki Literature Club! 
+# Sayori - render your prose/poems like it's Doki Doki Literature Club!
 [![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/Y8Y6Y0W4)
 
 Sayori allows you to add more flair to your poems or proses and render them in Doki Doki Literature Club's style, using Python's PIL module to generate images for you to share!
@@ -26,11 +26,27 @@ Sayori requires a modern Python installation to work. It is recommended to use P
     $ pip install -r requirements.txt
 ```
 
-To run the web application, simply run 
+To run the web application, simply run
 
 ```bash
    $ streamlit run streamlit_main.py
 ```
+
+## Development
+
+Sayori takes advantage of the Virtual Environments feature in Python. To develop for Sayori, you must make a venv first:
+
+```bash
+   $ python -m venv $(pwd)/.venv
+```
+Then finally activate your virtual environment
+
+```bash
+   $ source $(pwd)/.venv/bin/activate
+```
+
+This ensures a consistent environment regardless of your development environment settings. After switching to the new
+virtual environment, simply follow the [Installation](#installation) instructions.
 
 ## Copyright
 

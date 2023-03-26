@@ -15,115 +15,57 @@ import image
 import os
 import hashlib
 import redis
-import asyncio
 import gzip
 import logging
 import json
-import aiohttp_cors
 
 from io import BytesIO
-from aiohttp import web
-from concurrent.futures import ThreadPoolExecutor
+from flask import Flask, Request, Response, request
 
 # Redis cache, defaults to localhost
 CACHE = redis.StrictRedis(host=os.environ.get('REDIS_URL') or 'localhost')
-loop = asyncio.new_event_loop()
-# Scale workers to the amount of CPU present in the host
-executor = ThreadPoolExecutor(max_workers=os.cpu_count())
+app = Flask(__name__)
 
-async def handle_post(req):
-    body = await req.text()
-    is_json = True
-
-    if not body:
-        body = req.query
-        is_json = False
-
-    if not body:
-        return web.json_response({'error': 'No body or query string.', 'code': 0}, status=400)
-
-    if is_json:
-        # JSON might not be valid, let's check first
-        try:
-            body = json.loads(body)
-        except ValueError as e:
-            return web.json_response({'error': 'Invalid request.', 'code': 5}, status=400)
+@app.route('/', methods=['GET'])
+def handle_request(req: Request = request):
+    body = req.args.to_dict()
 
     if 'poem' not in body:
-        return web.json_response({'error': 'Missing required field: "poem".', 'code': 1}, status=400)
+        return Response(json.dumps({'error': 'Missing required field: "poem".', 'code': 1}), status=400)
 
     if not isinstance(body['poem'], str):
-        return web.json_response({'error': 'Field "poem" is not a string.', 'code': 2}, status=400)
+        return Response(json.dumps({'error': 'Field "poem" is not a string.', 'code': 2}), status=400)
 
     if not body['poem']:
-        return web.json_response({'error': 'Field "poem" is empty.', 'code': 3}, status=400)
+        return Response(json.dumps({'error': 'Field "poem" is empty.', 'code': 3}), status=400)
 
     if 'font' in body and body['font'] not in image.FONTS:
-        return web.json_response({'error': 'Unsupported font.', 'valid_fonts': image.FONTS.keys(), 'code': 4}, status=400)
+        return Response(json.dumps({'error': 'Unsupported font.', 'valid_fonts': image.FONTS.keys(), 'code': 4}), status=400)
 
 
     poem = body['poem']
     font = body.get('font', image.DEFAULT_FONT)
     bg = body.get('bg', image.BACKGROUNDS['default'])
     # trim hash if its more than 64 characters
-    hash = hashlib.md5((body['poem']).encode('utf-8')).hexdigest()[:64]    
-
-    # This is to debug whatever weirdness other platforms has, sigh
-    logger.info(f"Attempting req_HASH: {hash}")
+    hash = hashlib.md5((body['poem']).encode('utf-8')).hexdigest()[:64]
 
     # Check if the image is cached
     if CACHE.exists(hash):
-        # We already generated this before, so 302 to the cached image
-        return web.json_response({'url': f'/p/{hash}'}, status=200)
+        # We already generated this before, so just grab it from Redis
+        data = gzip.decompress(CACHE.get(hash)) # type: ignore
+        im = BytesIO(data)
+
+        return Response(im.getvalue(), status=200, content_type='image/png')
     else:
         im = image.generate_image(poem, font, bg)
         # Give it an expiry of 6 hours to save space
         CACHE.set(str(hash), gzip.compress(im.getvalue()), ex=21600)
 
-        # Dispose the buffer to save some bytes.
-        im.flush()
-        im.close()
-        
-        return web.json_response({'url': f'/p/{hash}'}, status=200)
-
-
-async def handle_get(req):
-    
-    hash = req.match_info['hash']
-
-    if not CACHE.exists(hash):
-        return web.Response(body="Not found.", status=404)
-    else:
-        data = gzip.decompress(CACHE.get(hash)) # type: ignore
-        im = BytesIO(data)
-
-        return web.json_response(body=im.getvalue(), status=200, content_type='image/png')
-
-# Finally setup routes and start the server
-app = web.Application()
-logger = logging.getLogger('aiohttp.access')
-
-app.router.add_route('GET', '/p/{hash}', handle_get)
-app.router.add_route('POST', '/g', handle_post)
-
-# This is for compatibility reasons with the old version of Sayori
-# As the old version allowed generation via a GET method with params.
-# ie. /g?poem=Test&font=m1
-app.router.add_route('GET', '/g', handle_post)
-
-# Setup CORS
-aiohttp_cors.setup(app, defaults={
-    "*": aiohttp_cors.ResourceOptions(
-        allow_methods=["GET", "POST", "OPTIONS"],
-        expose_headers="*",
-        allow_headers="*",
-    )
-})
+        return Response(im.getvalue(), status=200, content_type='image/png')
 
 logging.basicConfig(format= '%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
 
 if __name__ == '__main__':
-    logger.info(f"Starting server on port {os.environ.get('PORT') or 7270}")
-    logger.info(f"Using {os.cpu_count()} workers")
-    logger.info(f"Using Redis at {os.environ.get('REDIS_URL') or 'redis://localhost:6379'}")
-    web.run_app(app, port=int(os.environ.get('PORT') or 7270))
+    app.logger.info(f"Starting server on port {os.environ.get('PORT') or 7270}")
+    app.logger.info(f"Using Redis at {os.environ.get('REDIS_URL') or 'redis://localhost:6379'}")
+    app.run(port=int(os.environ.get('PORT') or 7270))
