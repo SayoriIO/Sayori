@@ -32,6 +32,4 @@ async def handle_request(req: Request = request):
 if __name__ == '__main__':
     app.logger.info(
         f"Starting server on port {os.environ.get('PORT') or 7270}")
-    app.logger.info(
-        f"Using Redis at {os.environ.get('REDIS_URL') or 'redis://localhost:6379'}")
     app.run(port=int(os.environ.get('PORT') or 7270))
