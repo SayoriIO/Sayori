@@ -1,20 +1,7 @@
 #!/usr/bin/env python3
-# API Overview
-# ------------
-
-# There are three accepted parameters, `poem`, `font` and `bg`.
-# `poem` is the only required parameter, and specifies the content of the poem to generate.
-# `font` is optional, and if it is not a supported font, it will default to DEFAULT_FONT (usually `m1`).
-# `bg` is optional, and if it is not a supported background, it will default to the default background.
-# Parameters can either be sent by a JSON body, or by a query string (?poem=Hello%20world&font=y1&bg=y2)
-
-# Requests can either be a GET or a POST, with the former being allowed to support browsers.
-# Both methods of submitting data are supported with both methods,
-# however most things that send a GET will only allow the query string method (as far as I am aware).
 import os
-import image
-
 from flask import Flask, Request, Response, request
+import image
 
 app = Flask(__name__)
 
