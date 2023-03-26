@@ -16,7 +16,7 @@ Sayori can generate images with the following parameters:
 ## Try it for yourself!
 Sayori is hosted on [Streamlit!](https://sayori.streamlit.app/)
 
-However, if you want to integrate the project to your application, a hosted API is available as well! You can find it [here](sayori.fly.dev). Documentation for the API version can be found [here](./WEBSERVER_API.md).
+However, if you want to integrate the project to your application, a hosted API is available as well! You can find it [here](https://sayori.fly.dev). Documentation for the API version can be found [here](./WEBSERVER_API.md).
 
 ## Installation
 

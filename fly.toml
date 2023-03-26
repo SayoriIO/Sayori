@@ -1,13 +1,13 @@
-# fly.toml file generated for sayori on 2023-03-20T11:05:23Z
+# fly.toml file generated for sayori on 2023-03-26T22:42:59Z
 
 app = "sayori"
 kill_signal = "SIGINT"
 kill_timeout = 5
-primary_region = "hkg"
+primary_region = "sin"
 processes = []
 
 [build]
-  builder = "paketobuildpacks/builder:base"
+  builder = "heroku/buildpacks:18"
 
 [env]
   PORT = "8080"
