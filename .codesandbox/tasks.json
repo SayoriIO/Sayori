@@ -16,7 +16,7 @@
     },
     "start-api": {
       "name": "Start API",
-      "command": "redis-server & gunicorn -w 2 webserver_api:app",
+      "command": "redis-server & gunicorn -w 2 webserver_api:app -b 0.0.0.0:7270",
 
       "preview": {
         "port": 7270,
