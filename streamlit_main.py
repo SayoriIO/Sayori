@@ -5,7 +5,7 @@ import image
 st.set_page_config(page_title="Sayori Poem Generator - Powered by Streamlit", page_icon="💖", layout="centered")
 
 # Our header is a Markdown file so let's use that instead.
-st.markdown(open("STREAMLIT_HEADER.md").read())
+st.markdown(open("STREAMLIT_HEADER.md").read(), unsafe_allow_html=True)
 
 font_names = {
     "Monika": "m1",

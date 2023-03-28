@@ -1,4 +1,16 @@
-![Sayori](https://chito.ge/AkbAugU.png)
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-8DX05CYLJ6"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-8DX05CYLJ6');
+</script>
+
+<p align="center">
+   <img alt="Sayori" src="https://chito.ge/AkbAugU.png">
+</p>
 
 # Sayori - render your prose/poems like it's Doki Doki Literature Club!  
 
