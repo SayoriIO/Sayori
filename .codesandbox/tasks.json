@@ -6,7 +6,7 @@
   "tasks": {
     "start": {
       "name": "Start Streamlit",
-      "command": "streamlit run streamlit_main.py",
+      "command": "pipenv run streamlit run streamlit_main.py",
       "runAtStart": true,
 
       "preview": {
@@ -16,7 +16,7 @@
     },
     "start-api": {
       "name": "Start API",
-      "command": "gunicorn -w 2 webserver_api:app --log-level DEBUG -b 0.0.0.0:7270",
+      "command": "pipenv run gunicorn -w 2 webserver_api:app --log-level DEBUG -b 0.0.0.0:7270",
 
       "preview": {
         "port": 7270,
